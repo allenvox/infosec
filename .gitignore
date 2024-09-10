@@ -148,4 +148,7 @@ Temporary Items
 .ionide
 
 ### Text ###
-*.txt
+*.txt*
+
+### Windows executables ###
+*.exe
