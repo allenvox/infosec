@@ -16,7 +16,7 @@ func vernamDecrypt(data []byte) []byte {
 
 func generateVernamKey(length int) []byte {
 	key := make([]byte, length)
-	for i := range key {
+	for i := range key { // just random bytes
 		key[i] = byte(rand.Intn(256))
 	}
 	return key
@@ -24,7 +24,7 @@ func generateVernamKey(length int) []byte {
 
 func xorBytes(data, key []byte) []byte {
 	result := make([]byte, len(data))
-	for i := range data {
+	for i := range data { // XOR for every byte
 		result[i] = data[i] ^ key[i%len(key)]
 	}
 	return result
