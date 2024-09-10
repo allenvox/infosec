@@ -1,18 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 )
 
 func vernamEncrypt(data []byte) []byte {
-	fmt.Println("Шифрование Вернама")
 	key := generateVernamKey(len(data))
 	return xorBytes(data, key)
 }
 
 func vernamDecrypt(data []byte) []byte {
-	fmt.Println("Расшифрование Вернама")
 	key := generateVernamKey(len(data))
 	return xorBytes(data, key)
 }

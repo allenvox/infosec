@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/big"
 )
 
@@ -9,7 +8,6 @@ var pElGamal = big.NewInt(7919)
 var gElGamal = big.NewInt(2)
 
 func elGamalEncrypt(data []byte) []byte {
-	fmt.Println("Шифрование Эль-Гамаля")
 	x := generateRandomBigInt(pElGamal)          // Секретный ключ
 	y := new(big.Int).Exp(gElGamal, x, pElGamal) // Открытый ключ
 
@@ -23,7 +21,6 @@ func elGamalEncrypt(data []byte) []byte {
 }
 
 func elGamalDecrypt(data []byte) []byte {
-	fmt.Println("Расшифрование Эль-Гамаля")
 	x := generateRandomBigInt(pElGamal) // Секретный ключ
 
 	a := new(big.Int).SetBytes(data[:len(data)/2])

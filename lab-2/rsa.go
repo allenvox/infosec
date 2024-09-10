@@ -20,7 +20,6 @@ func initRSAKeys() {
 }
 
 func rsaEncrypt(data []byte) []byte {
-	fmt.Println("Шифрование RSA")
 	initRSAKeys()
 
 	label := []byte("")
@@ -34,7 +33,6 @@ func rsaEncrypt(data []byte) []byte {
 }
 
 func rsaDecrypt(data []byte) []byte {
-	fmt.Println("Расшифрование RSA")
 	label := []byte("")
 	hash := sha256.New()
 

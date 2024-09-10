@@ -2,11 +2,10 @@ package main
 
 import (
 	"crypto/rand"
-	"fmt"
 	"math/big"
 )
 
-var pShamir = big.NewInt(7919) // Простое число
+var pShamir = big.NewInt(7919)
 
 func generateRandomBigInt(limit *big.Int) *big.Int {
 	n, err := rand.Int(rand.Reader, limit)
@@ -17,7 +16,6 @@ func generateRandomBigInt(limit *big.Int) *big.Int {
 }
 
 func shamirEncrypt(data []byte) []byte {
-	fmt.Println("Шифрование Шамира")
 	// Алгоритм Шамира требует выполнения шифрования обеими сторонами
 	k1 := generateRandomBigInt(pShamir) // Секрет первого участника
 	k2 := generateRandomBigInt(pShamir) // Секрет второго участника
@@ -30,7 +28,6 @@ func shamirEncrypt(data []byte) []byte {
 }
 
 func shamirDecrypt(data []byte) []byte {
-	fmt.Println("Расшифрование Шамира")
 	k1 := generateRandomBigInt(pShamir)
 	k2 := generateRandomBigInt(pShamir)
 
