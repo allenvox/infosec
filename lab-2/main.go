@@ -42,9 +42,37 @@ func main() {
 		}
 	case "rsa":
 		if action == "encrypt" {
-			result = rsaEncrypt(data)
+			bitLen := 512 // key size
+			e, d, n, _ := generateRSAKeys(bitLen)
+			err := saveKeyToFile("public_key.txt", e)
+			if err != nil {
+				fmt.Printf("Ошибка сохранения открытого ключа: %v\n", err)
+				return
+			}
+			err = saveKeyToFile("private_key.txt", d)
+			if err != nil {
+				fmt.Printf("Ошибка сохранения закрытого ключа: %v\n", err)
+				return
+			}
+			err = saveKeyToFile("n.txt", n) // n также нужен для шифрования/расшифровывания
+			if err != nil {
+				fmt.Printf("Ошибка сохранения модуля n: %v\n", err)
+				return
+			}
+			fmt.Println("Ключи успешно сохранены в файлы.")
+			result = rsaEncrypt(data, e, n)
 		} else {
-			result = rsaDecrypt(data)
+			nKey, err := readKeyFromFile("n.txt")
+			if err != nil {
+				fmt.Printf("Ошибка чтения модуля n: %v\n", err)
+				return
+			}
+			privateKey, err := readKeyFromFile("private_key.txt")
+			if err != nil {
+				fmt.Printf("Ошибка чтения закрытого ключа: %v\n", err)
+				return
+			}
+			result = rsaDecrypt(data, privateKey, nKey)
 		}
 	default:
 		fmt.Println("Неизвестный алгоритм. Доступные алгоритмы: shamir, elgamal, vernam, rsa")
