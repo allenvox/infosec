@@ -36,9 +36,9 @@ func main() {
 		}
 	case "vernam":
 		if action == "encrypt" {
-			result = vernamEncrypt(data)
+			result, _ = vernamEncrypt(data)
 		} else {
-			result = vernamDecrypt(data)
+			result, _ = vernamDecrypt(data)
 		}
 	case "rsa":
 		if action == "encrypt" {
