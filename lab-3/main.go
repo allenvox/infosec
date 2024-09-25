@@ -22,6 +22,19 @@ func computeFileHash(filename string) ([]byte, error) {
 	return hash[:], nil
 }
 
+func writeSignatureToFile(r, s *big.Int, filename string) error {
+	file, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("error creating file %v", err)
+	}
+	defer file.Close()
+	_, err = fmt.Fprintf(file, "%s\n%s\n", r.String(), s.String())
+	if err != nil {
+		return fmt.Errorf("error writing signature")
+	}
+	return nil
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Использование: go run . <elgamal|rsa|gost>")
@@ -40,24 +53,24 @@ func main() {
 
 	case "elgamal":
 
-		// 2. Генерация ключей для Эль-Гамаля
-		// Параметры p и g (их можно взять из известных групп)
+		// Генерация ключей
 		p, _ := new(big.Int).SetString("FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF", 16)
-		g := big.NewInt(2) // Генератор
+		g := big.NewInt(2)
 
 		x, y, _ := generateElGamalKeys(p, g)
 		fmt.Printf("Закрытый ключ x: %s\n", x.String())
 		fmt.Printf("Открытый ключ y: %s\n", y.String())
 
-		// 3. Подписание хэша файла
+		// Подписание хэша файла
 		r, s, err := elGamalSign(hash, p, g, x)
 		if err != nil {
 			fmt.Printf("Ошибка при подписании: %v\n", err)
 			return
 		}
 		fmt.Printf("Подпись: r = %s, s = %s\n", r.String(), s.String())
+		writeSignatureToFile(r, s, "sign.elgamal")
 
-		// 4. Проверка подписи
+		// Проверка подписи
 		valid := elGamalVerify(hash, r, s, p, g, y)
 		if valid {
 			fmt.Println("Подпись корректна!")
@@ -94,6 +107,7 @@ func main() {
 			return
 		}
 		fmt.Printf("Подпись файла: %x\n", signature)
+		ioutil.WriteFile("sign.rsa", signature, 0644)
 
 		// Проверка подписи
 		publicKey, err := loadRSAPublicKey("public.pem")
@@ -124,6 +138,7 @@ func main() {
 			return
 		}
 		fmt.Printf("Подпись: r = %s, s = %s\n", r.String(), s.String())
+		writeSignatureToFile(r, s, "sign.gost")
 
 		// Проверка подписи
 		valid := gostVerify(hash, r, s, &privateKey.PublicKey)
