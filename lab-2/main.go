@@ -7,13 +7,13 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 4 {
-		fmt.Println("Использование: go run . <encrypt|decrypt> <algorithm> <filename>")
+	if len(os.Args) < 3 {
+		fmt.Println("Использование: go run . <encrypt|decrypt> <algorithm>")
 		return
 	}
 	action := os.Args[1]
 	algorithm := os.Args[2]
-	filename := os.Args[3]
+	filename := "../example.txt"
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println("Ошибка чтения файла:", err)
@@ -79,7 +79,7 @@ func main() {
 		return
 	}
 
-	outputFilename := filename + ".out"
+	outputFilename := algorithm + "_out.txt"
 	err = ioutil.WriteFile(outputFilename, result, 0644)
 	if err != nil {
 		fmt.Println("Ошибка записи в файл:", err)

@@ -40,7 +40,7 @@ func main() {
 		fmt.Println("Использование: go run . <elgamal|rsa|gost>")
 		return
 	}
-	filename := "example.txt"
+	filename := "../example.txt"
 	hash, err := computeFileHash(filename)
 	if err != nil {
 		fmt.Printf("Ошибка при вычислении хэша файла: %v\n", err)
