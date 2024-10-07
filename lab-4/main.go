@@ -57,10 +57,12 @@ func verifyCard(card string, expectedHash string) bool {
 }
 
 type Player struct {
-	Name       string
-	PrivateKey *rsa.PrivateKey
-	PublicKey  *rsa.PublicKey
-	Hand       []Card
+	Name           string
+	PrivateKey     *rsa.PrivateKey
+	PublicKey      *rsa.PublicKey
+	Hand           []Card
+	EncryptedCards []string
+	Hashes         []string
 }
 
 func createPlayers(names []string) []Player {
@@ -91,40 +93,48 @@ func gameExample() {
 	playerNames := []string{"Amanda", "Boris", "Sebastian"}
 	players := createPlayers(playerNames)
 
+	// 1. Раздаем карты игрокам
 	dealCards(players, deck, 2)
 
-	// Players encrypt their cards
-	for _, player := range players {
+	// 2. Игроки шифруют свои карты с использованием своих публичных ключей
+	for i, player := range players {
 		fmt.Printf("\n%s encrypts their cards:\n", player.Name)
-		for i, card := range player.Hand {
+		for _, card := range player.Hand {
 			cardData := card.Value + " of " + card.Suit
 			encryptedCard, cardHash := encryptCard(cardData, player.PublicKey)
-			fmt.Printf("Card %d encrypted: %s\n", i+1, encryptedCard)
+			player.EncryptedCards = append(player.EncryptedCards, encryptedCard)
+			player.Hashes = append(player.Hashes, cardHash)
+			fmt.Printf("Encrypted card: %s\n", encryptedCard)
+		}
+		players[i] = player
+	}
 
-			// Check decrypted card
+	// 3. Вскрываем карты, каждый игрок расшифровывает свои карты
+	for _, player := range players {
+		fmt.Printf("\n%s reveals their cards and everyone verifies:\n", player.Name)
+		for i, encryptedCard := range player.EncryptedCards {
+			// Только сам игрок расшифровывает свои карты
 			decryptedCard, err := decryptCard(encryptedCard, player.PrivateKey)
 			if err != nil {
 				fmt.Println("Card decryption error:", err)
 				continue
 			}
-			fmt.Printf("Card %d decrypted: %s\n", i+1, decryptedCard)
+			fmt.Printf("%s decrypts: %s\n", player.Name, decryptedCard)
 
-			// Verification
-			if verifyCard(decryptedCard, cardHash) {
-				fmt.Println("Card verified!")
-			} else {
-				fmt.Println("Bad card! Verification fail")
+			// Остальные игроки проверяют целостность карты по хэшу
+			for _, otherPlayer := range players {
+				if otherPlayer.Name != player.Name {
+					if verifyCard(decryptedCard, player.Hashes[i]) {
+						fmt.Printf("%s verified card of %s: Card %d verified!\n", otherPlayer.Name, player.Name, i+1)
+					} else {
+						fmt.Printf("%s verification of card %d failed!\n", otherPlayer.Name, i+1)
+					}
+				}
 			}
 		}
 	}
 
-	for _, player := range players {
-		fmt.Printf("\nCards of %s: \n", player.Name)
-		for _, card := range player.Hand {
-			fmt.Printf("%s of %s\n", card.Value, card.Suit)
-		}
-	}
-
+	// 4. Карты на борде
 	board := deck[numPlayers*2 : numPlayers*2+5]
 	fmt.Println("\nCards on board:")
 	for _, card := range board {
