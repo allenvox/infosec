@@ -121,7 +121,7 @@ func zeroKnowledgeProof(graph Graph, numRounds int, numColors int) {
 		if proofRound(graph, permutedColors, randomEdge) {
 			fmt.Println("Верификация прошла успешно (разные цвета вершин).")
 		} else {
-			fmt.Println("Ошибка: одинаковые цвета на рёбрах!")
+			fmt.Println("Ошибка: одинаковые цвета у вершин ребра!")
 			return
 		}
 	}
